@@ -1,11 +1,7 @@
-from pygame import*
+from pygame import *
 
-
-# фонова музика
-
-
-# шрифти і написи
-
+ball = "ping.png"
+platform = "pong.png"
 
 # клас-батько для інших спрайтів
 class GameSprite(sprite.Sprite):
@@ -25,51 +21,53 @@ class GameSprite(sprite.Sprite):
 
     def reset(self):
         window.blit(self.image, (self.rect.x, self.rect.y))
-    # метод, що малює героя на вікні
-    #def reset(self):
-        #window.blit(self.image, (self.rect.x, self.rect.y))
-
 
 # клас головного гравця
 class Player(GameSprite):
     # метод для керування спрайтом стрілками клавіатури
     def update(self):
         keys = key.get_pressed()
-        if keys[K_LEFT] and self.rect.x > 5:
-            self.rect.x -= self.speed
-        if keys[K_RIGHT] and self.rect.x < win_width - 80:
-            self.rect.x += self.speed
+        if keys[K_w] and self.rect.y > 5:  # Змінено умову на self.rect.y
+            self.rect.y -= self.speed
+        if keys[K_s] and self.rect.y < win_height - 120:  # Змінено умову на self.rect.y
+            self.rect.y += self.speed
 
-    # метод "постріл" (використовуємо місце гравця, щоб створити там кулю)
-
-
-
+class Enemy(GameSprite):
+    pass
 # клас спрайта-ворога
 
-
-            
 # створюємо віконце
 rgb = 91, 147, 120
 win_width = 700
 win_height = 500
 display.set_caption("ping-pong")
 window = display.set_mode((win_width, win_height))
-#background = transform.scale(image.load(), (win_width, win_height))
 window.fill(rgb)
 run = True
+finish = False
+speed_x = 1
+speed_y = 1
+
+platform1 = Player(platform, 10, 170, 90, 110, 10)
+platform2 = Player(platform, 600, 170, 90, 110, 10)
+pin = Enemy(ball, 270, 170, 110, 90, 5)
 
 while run:
     # подія натискання на кнопку Закрити
     for e in event.get():
         if e.type == QUIT:
             run = False
-        
-            
 
+    platform1.update()
+    platform2.update()
 
+    if sprite.collide_rect(platform1,pin) or sprite.collide_rect(platform2, pin):
+        speed_x *= -1
 
-
-    
+    window.fill(rgb)
+    platform1.reset()
+    platform2.reset()
+    pin.reset()
 
     display.update()
     # цикл спрацьовує кожні 0.05 секунд
